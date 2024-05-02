@@ -19,12 +19,12 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Convert BRANCHE_NAME to upper case
-      run: echo "BRANCH_NAME_UPPER=$(echo ${GITHUB_REF##*/} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
+    - name: Convert BRANCHE_NAME to lower case
+      run: echo "BRANCH_NAME_LOWER=$(echo ${GITHUB_REF##*/} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository }}/ORIONFLOW_${{ env.BRANCH_NAME_UPPER }}:latest
+        tags: ghcr.io/${{ github.repository }}/orionflow_${{ env.BRANCH_NAME_LOWER }}:latest
