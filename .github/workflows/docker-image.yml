@@ -22,9 +22,13 @@ jobs:
     - name: Convert BRANCHE_NAME to lower case
       run: echo "BRANCH_NAME_LOWER=$(echo ${GITHUB_REF##*/} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+    - name: Extract repository name
+      id: repo_name
+      run: echo "REPO_NAME=$(echo ${{ github.repository }} | cut -d '/' -f 2)" >> $GITHUB_ENV
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository }}/orionflow_${{ env.BRANCH_NAME_LOWER }}:latest
+        tags: ghcr.io/${{ env.REPO_NAME }}/orionflow_${{ env.BRANCH_NAME_LOWER }}:latest
