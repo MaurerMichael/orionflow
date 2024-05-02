@@ -1,0 +1,30 @@
+name: Build Docker Image And Deploy latest CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag orionflow:$(date +%s)
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1 
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Convert BRANCHE_NAME to upper case
+      run: echo "BRANCH_NAME_UPPER=$(echo ${GITHUB_REF##*/} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ghcr.io/${{ github.repository }}/ORIONFLOW_${{ env.BRANCH_NAME_UPPER }}:latest
